@@ -1,415 +1,62 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Панель администратора</title>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-:root{color-scheme:dark;--bg:#07061a;--card:#17133ca6;--topbg:#0a0822c7;--tx:#eceaff;--mu:#9b97c9;--ln:#8c7dff38;--ac:#5ee7ff;--in:#ffffff12;--ok:#4dffb4;--no:#ff6a98;--wa:#ffc857;--opt:#15113a;--h1:#ffffff;--h2:#a9e9ff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-:root[data-theme="light"]{color-scheme:light;--bg:#ece8ff;--card:#ffffffcc;--topbg:#ffffffd9;--tx:#1d1648;--mu:#5b5690;--ln:#5a46c833;--ac:#5b3df5;--in:#5a46c814;--ok:#0a8f5c;--no:#d41f5e;--wa:#9a6400;--opt:#fff;--h1:#1d1648;--h2:#5b3df5}
-*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;color:var(--tx);font:15px/1.5 "Exo 2","Segoe UI",system-ui,sans-serif;min-height:100vh;background:radial-gradient(1200px 700px at 12% -10%,#4a22b05c,transparent 60%),radial-gradient(900px 600px at 98% 8%,#0c6bff40,transparent 55%),radial-gradient(900px 650px at 50% 115%,#ff2fa03d,transparent 60%),var(--bg);background-attachment:fixed}
-:root[data-theme="light"] body{background:radial-gradient(1000px 600px at 10% -10%,#b9a6ff88,transparent 60%),radial-gradient(900px 600px at 100% 10%,#8fd3ff77,transparent 55%),radial-gradient(900px 600px at 50% 115%,#ffb3e688,transparent 60%),var(--bg);background-attachment:fixed}
-body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;animation:tw 5s ease-in-out infinite alternate}
-body::before{background-image:radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 120px,#bff,transparent),radial-gradient(2px 2px at 160px 70px,#fff,transparent),radial-gradient(1px 1px at 230px 200px,#fff,transparent),radial-gradient(1.5px 1.5px at 60px 220px,#cdf,transparent),radial-gradient(1px 1px at 270px 40px,#fcf,transparent);background-size:300px 260px}
-body::after{background-image:radial-gradient(1px 1px at 40px 60px,#fff,transparent),radial-gradient(2px 2px at 190px 150px,#ffd9ff,transparent),radial-gradient(1.5px 1.5px at 330px 90px,#fff,transparent),radial-gradient(1px 1px at 120px 300px,#bfe,transparent);background-size:420px 380px;animation-delay:-2.5s}
-:root[data-theme="light"] body::before,:root[data-theme="light"] body::after{display:none}
-@keyframes tw{from{opacity:.25}to{opacity:.95}}@media(prefers-reduced-motion:reduce){body::before,body::after{animation:none}}
-#app{position:relative;z-index:1}
-button,input,select,textarea{font:inherit;color:inherit}option{background:var(--opt);color:var(--tx)}
-.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:16px;padding:12px clamp(14px,3vw,36px);background:var(--topbg);backdrop-filter:blur(14px);border-bottom:1px solid var(--ln)}
-.logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:16px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;background:linear-gradient(90deg,#5ee7ff,#b46cff,#ff6bd6);-webkit-background-clip:text;background-clip:text;color:transparent}
-.planet{width:26px;height:26px;border-radius:50%;display:inline-block;position:relative;background:radial-gradient(circle at 30% 30%,#ffd7fb,#b46cff 45%,#3b1fa8);box-shadow:0 0 14px #b46cff88}
-.planet::after{content:"";position:absolute;left:-7px;right:-7px;top:50%;height:10px;margin-top:-5px;border:2px solid #5ee7ff;border-radius:50%;transform:rotate(-20deg)}
-.tabs{display:flex;gap:6px;overflow-x:auto;flex:1;min-width:0}
-.tabs button{background:transparent;border:1px solid transparent;color:var(--mu);padding:8px 15px;border-radius:99px;cursor:pointer;font-weight:600;white-space:nowrap;transition:.15s}
-.tabs button:hover{color:var(--tx);border-color:var(--ln)}.tabs button.on{color:#fff;background:linear-gradient(90deg,#5b6bff,#c13cff);box-shadow:0 0 18px #8a5cff80}
-.chip{display:flex;align-items:center;gap:10px;cursor:pointer;padding:4px 14px 4px 4px;border-radius:99px;border:1px solid var(--ln);background:var(--in)}
-.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#0a0820;background:linear-gradient(135deg,#5ee7ff,#b46cff,#ff6bd6);flex:none}
-.av.big{width:96px;height:96px;font-size:42px;box-shadow:0 0 30px #b46cff88}
-.ib{width:36px;height:36px;border-radius:50%;border:1px solid var(--ln);background:var(--in);color:var(--tx);cursor:pointer;font-size:15px}.ib:hover{border-color:#9a7cff;box-shadow:0 0 14px #8a5cff66}
-main{max-width:1180px;margin:0 auto;padding:28px clamp(14px,3vw,36px) 70px}
-.card{position:relative;background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--ln);border-radius:20px;padding:24px;margin-bottom:22px;box-shadow:0 10px 40px #0005,inset 0 1px 0 #ffffff14}
-.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,#5ee7ff,#b46cff,#ff6bd6)}
-.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
-h2{font-weight:800;font-size:26px;line-height:1.15;margin:0 0 14px;background:linear-gradient(90deg,var(--h1),var(--h2));-webkit-background-clip:text;background-clip:text;color:transparent}
-h3{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--h2);margin:0 0 10px}
-.hero{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
-.tiles{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-bottom:22px}
-.tile{border-radius:18px;padding:18px;background:linear-gradient(135deg,var(--t1),var(--t2));border:1px solid var(--ln);display:flex;flex-direction:column;gap:6px}
-.tile span{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mu)}.tile b{font-size:22px}
-.btn{background:var(--in);color:var(--tx);border:1px solid var(--ln);border-radius:12px;padding:9px 17px;font-weight:600;cursor:pointer;transition:.15s}
-.btn:hover{transform:translateY(-1px);border-color:#9a7cff;box-shadow:0 6px 18px #7a5cff45}
-.btn.p{background:linear-gradient(90deg,#4f7bff,#a24bff);color:#fff;border:0}.btn.ok{background:linear-gradient(90deg,#10b981,#0ea5c6);color:#fff;border:0}.btn.no{background:linear-gradient(90deg,#ff4d7d,#ff7a45);color:#fff;border:0}
-.btn.s{padding:5px 12px;font-size:13px;border-radius:10px}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:760px}
-th{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);text-align:left;padding:10px 8px;border-bottom:1px solid var(--ln)}
-td{padding:12px 8px;border-bottom:1px solid var(--ln);vertical-align:middle}tbody tr:hover{background:#9682ff1c}
-.tag{display:inline-block;padding:2px 11px;border-radius:99px;font-size:12px;font-weight:600;background:var(--in);border:1px solid var(--ln)}
-.tag.ok{color:var(--ok);background:#4dffb414;border-color:currentColor}.tag.no{color:var(--no);background:#ff6a9814;border-color:currentColor}.tag.wa{color:var(--wa);background:#ffc85714;border-color:currentColor}
-.g{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-label{display:block;font-size:12px;font-weight:600;color:var(--mu);margin-bottom:5px;letter-spacing:.04em}
-input,select,textarea{width:100%;background:var(--in);border:1px solid var(--ln);border-radius:12px;padding:10px 12px}
-input:focus,select:focus,textarea:focus{outline:0;border-color:#8a6cff;box-shadow:0 0 0 3px #8a6cff40}
-input[type=checkbox]{accent-color:#b46cff}
-.pos{display:flex;flex-wrap:wrap;gap:6px 16px}.pos label{display:flex;gap:7px;align-items:center;color:var(--tx);margin:0;font-size:14px}.pos input{width:auto}
-.mo{position:fixed;inset:0;background:#02010ccc;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:9}
-.md{position:relative;background:var(--opt);border:1px solid #8a6cff88;border-radius:22px;padding:26px;width:min(720px,100%);max-height:92vh;overflow:auto;box-shadow:0 0 60px #8a5cff55}
-.mu{color:var(--mu)}.err{color:var(--no);min-height:20px;font-size:13px;font-weight:600}a{color:var(--ac)}
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--opt);color:var(--tx);border:1px solid #8a6cff;padding:10px 20px;border-radius:99px;box-shadow:0 0 24px #8a5cff66;opacity:0;transition:.25s;pointer-events:none;z-index:20}#toast.on{opacity:1}
-#app:has(.auth){display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
-#app:has(.auth)::before{content:"✦ Панель следящих ✦";font-weight:800;font-size:clamp(24px,5vw,42px);letter-spacing:.14em;text-transform:uppercase;text-align:center;margin-bottom:22px;background:linear-gradient(90deg,#5ee7ff,#b46cff,#ff6bd6);-webkit-background-clip:text;background-clip:text;color:transparent}
-.auth{width:min(440px,100%)}
-@media(max-width:860px){.top{flex-wrap:wrap}.tabs{order:5;width:100%;flex:none}.chip div{display:none}.chip{padding:4px}}
-.pchips{display:flex;flex-wrap:wrap;gap:8px}.pchip{border:1px solid var(--ln);background:var(--in);color:var(--tx);border-radius:99px;padding:8px 16px;cursor:pointer;font-weight:600;transition:.15s}
-.pchip.on{background:linear-gradient(90deg,#5b6bff,#c13cff);color:#fff;border-color:transparent;box-shadow:0 0 14px #8a5cff77}.pchip.on::before{content:"✓ "}.pchip:disabled{opacity:.4;cursor:not-allowed}
-.fab{position:fixed;right:clamp(16px,3vw,36px);bottom:calc(24px + env(safe-area-inset-bottom,0px));z-index:6;border:0;border-radius:99px;padding:14px 22px;font-weight:800;font-size:15px;color:#fff;background:linear-gradient(90deg,#ff6bd6,#8a5cff,#3ed3ff);box-shadow:0 8px 30px #b46cff88;cursor:pointer;transition:.15s}.fab:hover{transform:translateY(-2px) scale(1.03)}
-</style>
-</head>
-<body>
-<div id="app"></div><div id="toast"></div>
-<script>
-const POS=["Разработчик","Главный следящий","Зам. главного следящего","Следящий МЗ"];
-let db={users:[],vac:[],warn:[],reports:[],arch:[],tasks:[],vreq:[]},me=null,tab="list",sub="new",authMode="login";
-try{const s=localStorage.getItem("adm_db_v2");if(s)db=Object.assign(db,JSON.parse(s))}catch(e){}
-try{me=sessionStorage.getItem("adm_me_v2")}catch(e){}
-db.users.forEach((u,i)=>{u.pos=(u.pos||[]).filter(p=>POS.includes(p));if(!u.pos.length&&i===0)u.pos=["Разработчик"]});
-const save=()=>{try{localStorage.setItem("adm_db_v2",JSON.stringify(db))}catch(e){}};
-const $=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,10);
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const hms=s=>[Math.floor(s/3600),Math.floor(s/60)%60,s%60].map(n=>String(n).padStart(2,"0")).join(":");
-const toSec=t=>{const p=String(t||"0").split(":").map(Number);while(p.length<3)p.unshift(0);return(p[0]||0)*3600+(p[1]||0)*60+(p[2]||0)};
-const fd=d=>d?new Date(d).toLocaleDateString("ru-RU"):"—";
-const U=id=>db.users.find(u=>u.id===id),cur=()=>U(me);
-const canManage=()=>cur()&&["Главный следящий","Зам. главного следящего","Разработчик"].some(p=>cur().pos.includes(p));
-const isDev=u=>u.pos.includes("Разработчик"),canEdit=t=>canManage()&&(!isDev(t)||isDev(cur()));
-async function sha(t){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}catch(e){return btoa(unescape(encodeURIComponent(t)))}}
-function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),2200)}
-function theme(){const r=document.documentElement;r.dataset.theme=r.dataset.theme==="light"?"dark":"light"}
-function onVac(u){const t=Date.now();return db.vac.find(v=>v.uid===u.id&&!v.cancel&&new Date(v.from)<=t&&t<=new Date(v.to).getTime()+864e5)}
+const CLIENT_ID = "1446699532921339904";
+const CLIENT_SECRET = "jxQXpHc-oZurgSllSbJiAMmwt-5u0AZh";
+const REDIRECT_URI = "https://rapid-thunder-637c.andrejlyvadnyj136.workers.dev/callback";
+const FRONTEND_URL = "https://w0e0cjwaw3ru-production-4kwb8eup.us-central1.suga.run";
 
-function render(){
-  if(!cur()){me=null;return renderAuth()}
-  const u=cur(),tabs=[["list","Список администрации"],["me","Мой профиль"],["sgrp","Отчёты"],["tasks","Задания"],...(canManage()?[["otp","Отпуск"],["arch","Архив администрации"]]:[])];
-  const act={prof:"list",task:"tasks",archp:"arch"}[tab]||tab;
-  $("#app").innerHTML=`<header class="top"><div class="logo"><i class="planet"></i>Панель следящих</div>
-  <div class="tabs">${tabs.map(([k,n])=>`<button class="${act===k?"on":""}" onclick="tab='${k}';render()">${n}</button>`).join("")}</div>
-  <div class="chip" onclick="tab='me';render()" title="Мой профиль"><span class="av">${esc((u.nick[0]||"?").toUpperCase())}</span><div><b style="display:block;font-size:13px;line-height:1.15">${esc(u.nick)}</b><span class="mu" style="font-size:11px">${esc(u.pos[0]||"без должности")}</span></div></div>
-  <button class="ib" onclick="theme()" title="Тема">◐</button><button class="ib" onclick="logout()" title="Выход">⏻</button></header>
-  <main>${({list:vList,me:vMe,sgrp:vSgrp,vac:vVac,warn:vWarn,arch:vArch,prof:vProf,tasks:vTasks,task:vTask,archp:vArchP,otp:vOtp})[tab]()}</main>`;
-}
-function renderAuth(){
-  const first=!db.users.length;
-  $("#app").innerHTML=`<div class="auth card"><h2>${first?"Создайте первого пользователя":"Вход в панель"}</h2>
-  <p class="mu">${first?"Пользователей ещё нет. Первый пользователь получает должность Разработчик с полным доступом.":"Войдите по нику и паролю или через Discord ID."}</p>
-  ${first?`<div class="g" style="grid-template-columns:1fr"><div><label>Ник</label><input id="a_n"></div><div><label>Пароль</label><input id="a_p" type="password"></div><div><label>Discord ID</label><input id="a_d" inputmode="numeric"></div></div><div class="err" id="er"></div><button class="btn p" onclick="firstUser()">Создать и войти</button>`
-  :`<div class="row" style="justify-content:flex-start;margin-bottom:12px"><button class="btn s ${authMode==="login"?"p":""}" onclick="authMode='login';render()">Пароль</button><button class="btn s ${authMode==="ds"?"p":""}" onclick="authMode='ds';render()">Discord</button></div>
-  ${authMode==="login"?`<div class="g" style="grid-template-columns:1fr"><div><label>Ник</label><input id="a_n"></div><div><label>Пароль</label><input id="a_p" type="password" onkeydown="if(event.key==='Enter')login()"></div></div>`
-  :`<div><label>Discord ID</label><input id="a_d" inputmode="numeric"></div><div><label>Пароль</label><input id="a_p" type="password" onkeydown="if(event.key==='Enter')login()"></div><p class="mu" style="font-size:12px">Настоящий вход через OAuth Discord требует сервера. Здесь аккаунт находится по Discord ID, который указан у пользователя, и подтверждается паролем.</p>`}
-  <div class="err" id="er"></div><button class="btn p" onclick="login()">Войти</button>`}</div>`;
-}
-async function firstUser(){
-  const n=$("#a_n").value.trim(),p=$("#a_p").value,d=$("#a_d").value.trim();
-  if(!n||p.length<4)return $("#er").textContent="Укажите ник и пароль от 4 символов";
-  const u={id:uid(),nick:n,prefix:n,pos:["Разработчик"],vk:"",logs:"",forum:"",discord:d,hash:await sha(p),pwc:true,date:new Date().toISOString().slice(0,10),free:false,inval:false,note:"",created:Date.now()};
-  db.users.push(u);save();me=u.id;sessionStorage.setItem("adm_me_v2",me);render();
-}
-async function login(){
-  const p=await sha($("#a_p").value),n=$("#a_n")?.value.trim().toLowerCase(),d=$("#a_d")?.value.trim();
-  const u=db.users.find(x=>authMode==="ds"?(d&&x.discord===d):x.nick.toLowerCase()===n);
-  if(!u||u.hash!==p)return $("#er").textContent="Неверные данные для входа";
-  me=u.id;try{sessionStorage.setItem("adm_me_v2",me)}catch(e){}tab="list";render();
-}
-function logout(){me=null;try{sessionStorage.removeItem("adm_me_v2")}catch(e){}render()}
+export default {
+  async fetch(request) {
+    const url = new URL(request.url);
 
-function vList(){
-  const m=canManage();
-  return`<div class="card"><div class="row"><h2>Список администрации (Всего: ${db.users.length})</h2></div>
-  <input placeholder="Поиск по нику..." oninput="q=this.value;fill()" style="margin-bottom:10px" id="srch">
-  <div class="tw"><table><thead><tr><th>Ник</th><th>Префикс</th><th>Должности</th><th>Дата постановления</th><th>Статус</th><th>Действия</th></tr></thead><tbody id="tb"></tbody></table></div></div>`+(m?`<button class="fab" onclick="userForm()">＋ Новый Пользователь</button>`:"")+(setTimeout(fill),"");
-}
-let q="";
-function fill(){
-  const m=canManage(),t=$("#tb");if(!t)return;
-  t.innerHTML=db.users.filter(u=>u.nick.toLowerCase().includes(q.toLowerCase())).sort((a,b)=>Math.min(99,...a.pos.map(p=>POS.indexOf(p)))-Math.min(99,...b.pos.map(p=>POS.indexOf(p)))).map(u=>{
-    const w=db.warn.filter(x=>x.uid===u.id&&!x.removed).length,v=onVac(u);
-    return`<tr><td><b style="cursor:pointer;color:var(--ac)" onclick="openProf('${u.id}')">${esc(u.nick)}</b>${u.discord?`<div class="mu" style="font-size:12px">Discord: ${esc(u.discord)}</div>`:""}</td><td>${esc(u.prefix)}</td><td>${esc(u.pos.join(", ")||"—")}</td><td>${fd(u.date)}</td>
-    <td>${v?`<span class="tag wa">В отпуске до ${fd(v.to)}</span> `:""}${w?`<span class="tag no">Выговоры: ${w}/3</span>`:!v?'<span class="tag ok">Активен</span>':""}</td>
-    <td>${canEdit(u)?`<button class="btn s" onclick="userForm('${u.id}')">✎</button> <button class="btn s no" onclick="delUser('${u.id}')">✕</button>`:"—"}</td></tr>`}).join("")||`<tr><td colspan="8" class="mu">Никого не найдено</td></tr>`;
-}
-function modal(h){const d=document.createElement("div");d.className="mo";d.id="mo";d.innerHTML=`<div class="md">${h}</div>`;d.onclick=e=>{if(e.target===d)closeM()};document.body.appendChild(d)}
-function closeM(){$("#mo")?.remove()}
-function userForm(id){
-  const u=id?U(id):{nick:"",prefix:"",pos:[],discord:"",date:"",fixed:"",note:""};
-  const inp=(i,l,v,t)=>`<div><label>${l}</label><input id="${i}" ${t?`type="${t}"`:""} value="${esc(v)}"></div>`;
-  modal(`<div class="row"><h2>${id?"Карточка сотрудника":"Новый сотрудник"}</h2><button class="btn s" onclick="closeM()">✕</button></div>
-  <h3>Основное</h3><div class="g">${inp("f_n","Ник",u.nick)}${inp("f_p","Префикс",u.prefix)}${inp("f_d","Discord ID",u.discord)}${inp("f_a","Дата постановления",u.date,"date")}</div>
-  <h3 style="margin-top:20px">Должности</h3><div class="pchips" id="pl">${POS.map(p=>`<button type="button" class="pchip ${u.pos.includes(p)?"on":""}" data-v="${esc(p)}" ${p==="Разработчик"&&!isDev(cur())?"disabled":""} onclick="this.classList.toggle('on')">${esc(p)}</button>`).join("")}</div>
-  <div style="margin-top:14px"><label>Закреплённая должность</label><input id="f_x" value="${esc(u.fixed)}" placeholder="Например: Следящий за МЗСС"></div>
-  <h3 style="margin-top:20px">Заметки</h3><textarea id="f_t" rows="2" placeholder="Видно только руководству">${esc(u.note)}</textarea>
-  ${id?"":`<p class="mu">Пароль нового сотрудника совпадает с его ником. Позже его можно сменить или сбросить.</p>`}
-  <div class="err" id="er"></div><button class="btn p" onclick="saveUser('${id||""}')">${id?"Сохранить":"Создать сотрудника"}</button>`);
-}
-async function saveUser(id){
-  const n=$("#f_n").value.trim();
-  if(!n)return $("#er").textContent="Укажите ник";
-  if(db.users.some(x=>x.id!==id&&x.nick.toLowerCase()===n.toLowerCase()))return $("#er").textContent="Такой ник уже есть";
-  const u=id?U(id):{id:uid(),created:Date.now(),hash:await sha(n)};
-  Object.assign(u,{nick:n,prefix:$("#f_p").value.trim()||n,date:$("#f_a").value,discord:$("#f_d").value.trim(),fixed:$("#f_x").value.trim(),note:$("#f_t").value,pos:[...document.querySelectorAll("#pl .pchip.on")].map(i=>i.dataset.v)});
-  if(!id)db.users.push(u);save();closeM();render();toast(id?"Изменения сохранены":"Сотрудник добавлен, пароль совпадает с ником");
-}
-function delUser(id){
-  if(id===me)return toast("Нельзя снять себя");
-  const u=U(id);if(!u||!canEdit(u))return toast("Недостаточно прав");
-  const i=(k,l,v,ty)=>`<div style="margin-bottom:12px"><label>${l}</label><input id="d_${k}" ${ty?`type="${ty}"`:""} value="${esc(v||"")}"></div>`;
-  modal(`<h2>Снятие: ${esc(u.nick)}</h2>${i("date","Дата снятия",new Date().toISOString().slice(0,10),"date")}${i("reason","Причина снятия (за что был снят)","")}${i("vk","VK (идентификатор страницы)",u.vk)}${i("ds","Discord",u.discord)}${i("per","Период администрирования (пусто: рассчитается по датам)","")}${i("sl","Был ли следящим (укажите фракцию)","")}
-  <p class="mu" style="font-size:12px">После нажатия на кнопку «Снять» пользователь будет удалён из системы, а его данные попадут в архив.</p><div class="err" id="er"></div>
-  <div class="row"><button class="btn" onclick="closeM()">ОТМЕНА</button><button class="btn no" onclick="doRemove('${id}')">СНЯТЬ</button></div>`);
-}
-function doRemove(id){
-  const u=U(id),g=k=>$("#d_"+k).value.trim(),reason=g("reason"),date=g("date");
-  if(!reason)return $("#er").textContent="Укажите причину снятия";
-  if(!date)return $("#er").textContent="Укажите дату снятия";
-  db.arch.push({id:uid(),nick:u.nick,vk:g("vk"),discord:g("ds"),reason,period:g("per")||`${fd(u.date||u.created)} — ${fd(date)}`,sl:g("sl")||"Нет",date,by:me,byn:cur().nick,auid:u.id,snap:{prefix:u.prefix,pos:u.pos,date:u.date,discord:u.discord,fixed:u.fixed||"",note:u.note||""}});
-  db.users=db.users.filter(x=>x.id!==id);save();closeM();tab="list";render();toast("Пользователь снят и перенесён в архив");
-}
-const archText=a=>`Ник администратора который был снят: ${a.nick}\nVK (Идентификатор страницы): ${a.vk}\nDiscord: ${a.discord}\nЗа что был снят: ${a.reason}\nПериод администрирования: ${a.period}\nБыл ли следящим [Указать фракцию]: ${a.sl}`;
-let aid=null,aform=false;
-function openArch(id){aid=id;aform=false;tab="archp";render()}
-function vArch(){
-  if(!canManage())return`<div class="card"><p class="mu">Архив доступен Главному следящему, заместителю и разработчику.</p></div>`;
-  const L=db.arch.slice().reverse();
-  return`<div class="card"><h2>Архив администрации (Всего: ${L.length})</h2>${L.length?`<div class="tw"><table><thead><tr><th>Ник</th><th>Должности</th><th>Дата снятия</th><th>Снял</th></tr></thead><tbody>${L.map(a=>`<tr style="cursor:pointer" onclick="openArch('${a.id}')"><td><b style="color:var(--ac)">${esc(a.nick)}</b></td><td>${esc(((a.snap||{}).pos||[]).join(", ")||"—")}</td><td>${fdd(a.date)}</td><td>${esc(a.byn||"—")}</td></tr>`).join("")}</tbody></table></div>`:`<p class="mu">Архив пуст. Сюда попадают снятые администраторы.</p>`}</div>`;
-}
-function vArchP(){
-  const a=db.arch.find(x=>x.id===aid);if(!a||!canManage()){tab="arch";return vArch()}
-  const s=a.snap||{},W=db.warn.filter(x=>a.auid&&x.uid===a.auid).slice().reverse(),V=db.vac.filter(x=>a.auid&&x.uid===a.auid).slice().reverse();
-  const row=(l,t)=>`<p style="margin:6px 0"><span class="mu">${l}:</span> ${esc(t||"—")}</p>`;
-  return`<div class="card"><button class="btn s" onclick="tab='arch';render()">← К архиву</button>
-  <h2 style="margin-top:14px">${esc(a.nick)} <span class="tag no">Снят</span></h2>
-  ${row("Префикс",s.prefix)}${row("Должности",(s.pos||[]).join(", "))}${row("Закреплённая должность",s.fixed)}${row("Дата постановления",s.date?fdd(s.date):"")}${row("Discord",s.discord||a.discord)}${row("Заметки",s.note)}
-  <div style="margin-top:16px"><button class="btn no" onclick="aform=!aform;render()">Информация о снятии</button></div>
-  ${aform?`<div style="margin-top:14px;border-top:1px solid var(--ln);padding-top:14px"><div style="white-space:pre-wrap">${esc(archText(a))}</div><div class="mu" style="font-size:12px;margin-top:6px">Снят ${fdd(a.date)}. Снял: ${esc(a.byn||"—")}</div></div>`:""}</div>
-  <div class="card"><h3>Выговоры</h3>${W.length?W.map(x=>`<div style="border-top:1px solid var(--ln);padding:8px 0">${esc(x.reason)} <span class="tag ${x.removed?"":"no"}">${x.removed?"Снят":"Действовал"}</span><div class="mu" style="font-size:12px">Выдал: ${esc(x.byn||"—")}, ${fd(x.date)}</div></div>`).join(""):'<p class="mu">Выговоров не было</p>'}</div>
-  <div class="card"><h3>Отпуска</h3>${V.length?V.map(x=>`<div style="border-top:1px solid var(--ln);padding:8px 0">${fdd(x.from)} — ${fdd(x.to)}${x.reason?`: ${esc(x.reason)}`:""}<div class="mu" style="font-size:12px">Выдал: ${esc(x.byn||"—")}</div></div>`).join(""):'<p class="mu">Отпусков не было</p>'}</div>`;
-}
-function copyArch(id){const t=archText(db.arch.find(a=>a.id===id)),ok=()=>toast("Шаблон скопирован"),fb=()=>{const e=document.createElement("textarea");e.value=t;document.body.appendChild(e);e.select();try{document.execCommand("copy");ok()}catch(x){toast("Не удалось скопировать")}e.remove()};try{navigator.clipboard.writeText(t).then(ok,fb)}catch(x){fb()}}
+    // 1. Начало входа
+    if (url.pathname === "/login") {
+      const discordAuth = new URL("https://discord.com/api/oauth2/authorize");
+      discordAuth.searchParams.set("client_id", CLIENT_ID);
+      discordAuth.searchParams.set("redirect_uri", REDIRECT_URI);
+      discordAuth.searchParams.set("response_type", "code");
+      discordAuth.searchParams.set("scope", "identify");
+      return Response.redirect(discordAuth.toString(), 302);
+    }
 
-function vMe(){
-  const u=cur(),w=db.warn.filter(x=>x.uid===u.id&&!x.removed).length,v=onVac(u);
-  const tile=(l,val,a,b)=>`<div class="tile" style="--t1:${a};--t2:${b}"><span>${l}</span><b>${val}</b></div>`;
-  return`<div class="card hero"><div class="av big">${esc((u.nick[0]||"?").toUpperCase())}</div><div style="flex:1;min-width:240px"><div class="mu" style="letter-spacing:.16em;font-size:12px;text-transform:uppercase">Личная информация</div><h2 style="margin:4px 0 10px">${esc(u.nick)}</h2><div>${u.pos.map(p=>`<span class="tag ok" style="margin-right:6px">${esc(p)}</span>`).join("")||'<span class="tag">без должности</span>'}${v?`<span class="tag wa">В отпуске до ${fdd(v.to)}</span>`:""}</div></div>
-  <div class="row" style="gap:10px"><button class="btn" onclick="chPass()">Сменить пароль</button><button class="btn p" onclick="vreqModal()">Запросить отпуск</button></div></div>
-  <div class="tiles">${tile("Закреплённая должность",esc(u.fixed||"—"),"#6d4dff66","#c13cff33")}${tile("Выговоры",w+" / 3",w?"#ff4d7d66":"#10b98166",w?"#ff7a4533":"#0ea5c633")}${tile("Дата постановления",u.date?fdd(u.date):"—","#0ea5c666","#4f7bff33")}${tile("Статус",v?"В отпуске":"Активен",v?"#ffc85766":"#10b98166","#ff6bd626")}</div>
-  ${vreqList(u.id)}${isDev(u)?`<div class="card"><h3>Данные (только Разработчик)</h3><p class="mu">Резервная копия содержит сотрудников, отчёты, отпуска и архив. Пароли в ней хранятся в зашифрованном виде.</p><div class="row" style="justify-content:flex-start"><button class="btn" onclick="exportDb()">Скачать копию</button><button class="btn" onclick="$('#imp').click()">Загрузить копию</button><input id="imp" type="file" accept=".json" style="display:none" onchange="importDb(this)"></div></div>`:""}`;
-}
-function chPass(){promptBox("Смена пароля","Новый пароль (от 4 символов)",v=>{if(v.length<4){$("#er").textContent="Пароль слишком короткий";return false}sha(v).then(h=>{cur().hash=h;cur().pwc=true;save();toast("Пароль изменён")})},1)}
+    // 2. Callback от Discord
+    if (url.pathname === "/callback") {
+      const code = url.searchParams.get("code");
+      if (!code) {
+        return Response.redirect(FRONTEND_URL + "?error=no_code", 302);
+      }
 
-let rsub="all",rf={from:"",to:"",type:"",who:"me"};
-const fdy=d=>{const p=String(d||"").slice(0,10).split("-");return p.length===3?`${p[2]}.${p[1]}.${p[0].slice(2)}`:"—"};
-const rFrom=r=>r.from||r.rdate||"",rTo=r=>r.to||r.rdate||"",rLinks=r=>r.links||(r.link?[r.link]:[]);
-const isW=r=>r.rtype!=="sgrp",ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-function satWeek(d){const a=d?new Date(d+"T12:00:00"):new Date();a.setDate(a.getDate()-(a.getDay()+1)%7);const b=new Date(a);b.setDate(b.getDate()+7);return[ymd(a),ymd(b)]}
-const repText=r=>isW(r)?`Еженедельные отчеты следящих -\nОтчётность Следящего за МЗСС ${r.nick||U(r.uid)?.nick||""}.\nДата: с ${fdy(rFrom(r))} по ${fdy(rTo(r))}\nПроделанная работа ПО ПУНКТАМ!!!\n${r.text||""}${rLinks(r).length?"\nДоказательства:\n"+rLinks(r).join("\n"):""}`:`СГРП\nСледящий: ${r.nick||U(r.uid)?.nick||""}\nДата: ${fdy(rFrom(r))}\nПрисутствие: ${r.att||"—"}${r.att==="Отсутствовал"?"\nПричина: "+(r.text||"—"):"\nСсылка: "+rLinks(r).join(" ")}`;
-function copyTxt(t){const ok=()=>toast("Скопировано"),fb=()=>{const e=document.createElement("textarea");e.value=t;document.body.appendChild(e);e.select();try{document.execCommand("copy");ok()}catch(x){toast("Не удалось скопировать")}e.remove()};try{navigator.clipboard.writeText(t).then(ok,fb)}catch(x){fb()}}
-function copyRep(id){copyTxt(repText(db.reports.find(r=>r.id===id)))}
-function vSgrp(){
-  const m=canManage(),who=m?rf.who:me,ST={new:"На проверке",ok:"Одобрен",no:"Отказан"};
-  const base=db.reports.filter(r=>who==="all"||r.uid===who);
-  const L=base.filter(r=>(rsub==="all"||r.st===rsub)&&(!rf.from||rTo(r)>=rf.from)&&(!rf.to||rFrom(r)<=rf.to)&&(!rf.type||(rf.type==="sgrp"?!isW(r):isW(r))));
-  const wk={};L.forEach(r=>{const p=isW(r)?[rFrom(r),rTo(r)]:satWeek(rFrom(r)),k=p.join("|");(wk[k]=wk[k]||[]).push(r)});
-  const keys=Object.keys(wk).sort().reverse();
-  const title=who==="all"?"Отчёты следящих":who===me?"Мои отчёты":"Отчёты: "+(U(who)?.nick||"—");
-  const tb=[["all","Все"],["new","На проверке"],["ok","Одобренные"],["no","Отказанные"]].map(([k,n])=>`<button class="btn s ${rsub===k?"p":""}" onclick="rsub='${k}';render()">${n} (${base.filter(r=>k==="all"||r.st===k).length})</button>`).join(" ");
-  const card=r=>`<div style="border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:10px"><div class="row" style="justify-content:flex-start"><b>${isW(r)?"Еженедельный отчёт":"СГРП"}</b><span class="tag ${r.st==="ok"?"ok":r.st==="no"?"no":"wa"}">${ST[r.st]}</span>${r.att?`<span class="tag ${r.att==="Присутствовал"?"ok":"no"}">${r.att}</span>`:""}</div>
-  <div class="mu" style="font-size:12px;margin-top:4px"><b>${esc(r.nick||U(r.uid)?.nick||"удалён")}</b> · ${isW(r)?`период ${fdd(rFrom(r))} — ${fdd(rTo(r))}`:`дата ${fdd(rFrom(r))}`} · Подан: ${fdt(r.date)}</div>
-  ${r.text?`<div style="white-space:pre-wrap;margin:10px 0">${!isW(r)?"Причина: ":""}${esc(r.text)}</div>`:'<div style="height:8px"></div>'}
-  ${rLinks(r).map((l,i)=>`<a href="${/^https?:\/\//i.test(l)?esc(l):"#"}" target="_blank" rel="noopener" style="color:var(--ac);margin-right:12px">${isW(r)?"Доказательство "+(i+1):"Ссылка"}</a>`).join("")}
-  ${r.by?`<div class="mu" style="font-size:12px;margin-top:6px">Решение: ${esc(r.byn||U(r.by)?.nick||"—")}, ${fd(r.ddate)}${r.reason?` — ${esc(r.reason)}`:""}</div>`:""}
-  ${m?`<div class="row" style="justify-content:flex-start;margin-top:10px"><button class="btn s" onclick="copyRep('${r.id}')">Копировать шаблон</button>${r.st==="new"?`<button class="btn s ok" onclick="decide('${r.id}','ok')">Одобрить</button><button class="btn s no" onclick="decide('${r.id}','no')">Отказать</button>`:""}</div>`:""}</div>`;
-  return`<div class="card"><div class="row"><div><div class="mu" style="font-size:12px;letter-spacing:.12em">ОТЧЁТНОСТЬ</div><h2 style="margin:0">${title}</h2></div><button class="btn p" onclick="repModal()">+ Новый отчёт</button></div>
-  <div class="row" style="justify-content:flex-start;margin-top:14px">${tb}</div></div>
-  <div class="card"><div class="g">${m?`<div><label>Следящий</label><select onchange="rf.who=this.value;render()"><option value="all" ${who==="all"?"selected":""}>Все следящие</option>${db.users.map(u=>`<option value="${u.id}" ${who===u.id?"selected":""}>${u.id===me?"Я ("+esc(u.nick)+")":esc(u.nick)}</option>`).join("")}</select></div>`:""}
-  <div><label>Период с</label><input type="date" value="${rf.from}" onchange="rf.from=this.value;render()"></div><div><label>Период по</label><input type="date" value="${rf.to}" onchange="rf.to=this.value;render()"></div>
-  <div><label>Тип</label><select onchange="rf.type=this.value;render()"><option value="">Все типы</option><option value="sgrp" ${rf.type==="sgrp"?"selected":""}>СГРП</option><option value="weekly" ${rf.type==="weekly"?"selected":""}>Еженедельный отчёт</option></select></div></div></div>
-  ${keys.length?keys.map(k=>{const[a,b]=k.split("|");return`<div class="card"><h3>Неделя с ${fdd(a)} по ${fdd(b)} <span class="mu" style="font-weight:400">(${wk[k].length})</span></h3>${wk[k].slice().sort((x,y)=>y.date-x.date).map(card).join("")}</div>`}).join(""):`<div class="card"><p class="mu">Отчётов не найдено.</p></div>`}`;
-}
-function repModal(){
-  const[f,e]=satWeek();
-  modal(`<div class="row"><h2>Новый отчёт</h2><button class="btn s" onclick="closeM()">✕</button></div>
-  <label>Тип</label><select id="r_y" onchange="repType()"><option value="weekly">Еженедельный отчёт</option><option value="sgrp">СГРП</option></select>
-  <div id="r_w"><p class="mu" style="margin:12px 0 0">Период: <b>${fdd(f)}</b> — <b>${fdd(e)}</b> (с субботы по следующую субботу, определяется автоматически)</p>
-  <label style="margin-top:12px">Проделанная работа (по пунктам)</label><textarea id="r_t" rows="6" placeholder="Каждый пункт с новой строки"></textarea>
-  <label style="margin-top:12px">Доказательства (ссылки)</label><div id="r_l"><input class="rl" placeholder="https://..." style="margin-bottom:6px"></div><button class="btn s" onclick="addLink()">+ Добавить ссылку</button></div>
-  <div id="r_s" style="display:none"><div class="g" style="margin-top:12px"><div><label>Присутствие</label><select id="r_a" onchange="repAtt()"><option>Присутствовал</option><option>Отсутствовал</option></select></div><div><label>Дата</label><input id="r_d" type="date" value="${tday()}"></div><div id="r_uw"><label>Ссылка</label><input id="r_u" placeholder="https://..."></div><div id="r_cw" style="display:none"><label>Причина</label><input id="r_c"></div></div></div>
-  <div class="err" id="er"></div><div class="row" style="margin-top:12px"><button class="btn" onclick="closeM()">Отмена</button><button class="btn p" onclick="saveRep()">Отправить</button></div>`);
-}
-function repType(){const g=$("#r_y").value==="sgrp";$("#r_w").style.display=g?"none":"";$("#r_s").style.display=g?"":"none"}
-function addLink(){const i=document.createElement("input");i.className="rl";i.placeholder="https://...";i.style.marginBottom="6px";$("#r_l").appendChild(i)}
-function saveRep(){
-  const err=t=>$("#er").textContent=t,base={id:uid(),uid:me,nick:cur().nick,st:"new",date:Date.now()};
-  if($("#r_y").value==="sgrp"){
-    const d=$("#r_d").value,u=$("#r_u").value.trim();
-    const a=$("#r_a").value,c=$("#r_c").value.trim();if(!d)return err("Укажите дату");if(a==="Присутствовал"&&!u)return err("Укажите ссылку");if(a==="Отсутствовал"&&!c)return err("Укажите причину");
-    db.reports.push({...base,rtype:"sgrp",from:d,to:d,rdate:d,att:a,links:a==="Присутствовал"&&u?[u]:[],text:a==="Отсутствовал"?c:""});
-  }else{
-    const[f,e]=satWeek(),text=$("#r_t").value.split("\n").map(l=>l.trim()).filter(Boolean).map((l,i)=>/^(\d+[.)]|[-•*])\s/.test(l)?l:`${i+1}. ${l}`).join("\n");
-    const links=[...document.querySelectorAll(".rl")].map(i=>i.value.trim()).filter(Boolean);
-    if(!text)return err("Опишите проделанную работу");
-    db.reports.push({...base,rtype:"weekly",from:f,to:e,rdate:f,text,links});
-  }
-  save();closeM();rsub="all";rf.who=me;render();toast("Отчёт отправлен");
-}
+      // Обмениваем code на токен
+      const tokenRes = await fetch("https://discord.com/api/oauth2/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: CLIENT_ID,
+          client_secret: CLIENT_SECRET,
+          grant_type: "authorization_code",
+          code,
+          redirect_uri: REDIRECT_URI,
+        }),
+      });
 
-function decide(id,st){
-  const r=db.reports.find(x=>x.id===id);
-  const fin=reason=>{Object.assign(r,{st,by:me,byn:cur().nick,ddate:Date.now(),reason:reason||""});save();render();toast(st==="ok"?"Отчёт одобрен":"Отчёт отклонён")};
-  if(st==="no")promptBox("Отказать в отчёте","Причина отказа (необязательно)",v=>{fin(v)});else fin("");
-}
+      const tokenData = await tokenRes.json();
+      if (!tokenData.access_token) {
+        return Response.redirect(FRONTEND_URL + "?error=token_fail", 302);
+      }
 
-let cb=null,vsub="act",wsub="act";
-function confirmBox(t,fn){cb=fn;modal(`<h3>${t}</h3><div class="row" style="justify-content:flex-start;margin-top:14px"><button class="btn p" onclick="runCb()">Подтвердить</button><button class="btn" onclick="closeM()">Отмена</button></div>`)}
-function promptBox(t,l,fn,pw){cb=fn;modal(`<h3>${t}</h3><label>${l}</label><input id="pb" ${pw?'type="password"':""}><div class="err" id="er"></div><div class="row" style="justify-content:flex-start;margin-top:10px"><button class="btn p" onclick="runCb(1)">Готово</button><button class="btn" onclick="closeM()">Отмена</button></div>`);setTimeout(()=>$("#pb").focus())}
-function runCb(p){if(cb(p?$("#pb").value:undefined)!==false)closeM()}
-const nm=(r,k,u)=>esc(r[k]||U(r[u])?.nick||"—"),sm=(n,d)=>`${esc(n||"—")}<div class="mu" style="font-size:12px">${fd(d)}</div>`;
-function vVac(){
-  const m=canManage(),now=Date.now();
-  const st=v=>v.cancel?"Отозван":now>new Date(v.to).getTime()+864e5?"Завершён":now<new Date(v.from).getTime()?"Запланирован":"Активен";
-  const live=v=>!v.cancel&&st(v)!=="Завершён";
-  const L=db.vac.filter(v=>(vsub==="act")===live(v)).slice().reverse();
-  const tb=(k,n)=>`<button class="btn s ${vsub===k?"p":""}" onclick="vsub='${k}';render()">${n} (${db.vac.filter(v=>(k==="act")===live(v)).length})</button>`;
-  return`<div class="card"><h2>Отпуска</h2>${m?`<div class="g"><div><label>Пользователь</label><select id="v_u">${db.users.map(u=>`<option value="${u.id}">${esc(u.nick)}</option>`).join("")}</select></div><div><label>С</label><input id="v_f" type="date"></div><div><label>По</label><input id="v_t" type="date"></div><div><label>Причина</label><input id="v_r"></div></div><div style="margin-top:12px"><button class="btn p" onclick="addVac()">Выдать отпуск</button></div>`:`<p class="mu">Выдавать отпуска могут Главный следящий, Зам. главного следящего и Разработчик.</p>`}</div>
-  <div class="card"><div class="row" style="justify-content:flex-start;margin-bottom:10px">${tb("act","Действующие")}${tb("arc","Архив")}</div><div class="tw"><table><thead><tr><th>Ник</th><th>С</th><th>По</th><th>Причина</th><th>Статус</th><th>Выдал</th><th>${vsub==="arc"?"Закрыл":""}</th></tr></thead><tbody>${L.length?L.map(v=>`<tr><td>${nm(v,"nick","uid")}</td><td>${fd(v.from)}</td><td>${fd(v.to)}</td><td>${esc(v.reason)}</td><td><span class="tag ${st(v)==="Активен"?"wa":""}">${st(v)}</span></td><td>${sm(v.byn||U(v.by)?.nick,v.date)}</td><td>${vsub==="arc"?(v.cancel?sm(v.cbyn,v.cdate):"Истёк срок"):(m?`<button class="btn s no" onclick="cancelVac('${v.id}')">Отозвать</button>`:"")}</td></tr>`).join(""):`<tr><td colspan="7" class="mu">${vsub==="act"?"Действующих отпусков нет":"Архив пуст"}</td></tr>`}</tbody></table></div></div>`;
-}
-function addVac(){
-  const f=$("#v_f").value,t=$("#v_t").value;if(!f||!t||t<f)return toast("Проверьте даты");
-  const u=U($("#v_u").value);
-  db.vac.push({id:uid(),uid:u.id,nick:u.nick,from:f,to:t,reason:$("#v_r").value,by:me,byn:cur().nick,date:Date.now()});save();render();toast("Отпуск выдан");
-}
-function cancelVac(id){confirmBox("Отозвать отпуск? Он попадёт в архив.",()=>{Object.assign(db.vac.find(v=>v.id===id),{cancel:true,cby:me,cbyn:cur().nick,cdate:Date.now()});save();render()})}
-function vWarn(){
-  const m=canManage();
-  const L=db.warn.filter(v=>(wsub==="act")===!v.removed).slice().reverse();
-  const tb=(k,n)=>`<button class="btn s ${wsub===k?"p":""}" onclick="wsub='${k}';render()">${n} (${db.warn.filter(v=>(k==="act")===!v.removed).length})</button>`;
-  return`<div class="card"><h2>Выговоры</h2>${m?`<div class="g"><div><label>Пользователь</label><select id="w_u">${db.users.map(u=>`<option value="${u.id}">${esc(u.nick)}</option>`).join("")}</select></div><div style="grid-column:span 2"><label>Причина</label><input id="w_r"></div></div><div style="margin-top:12px"><button class="btn no" onclick="addWarn()">Выдать выговор</button></div>`:`<p class="mu">Выдавать выговоры могут Главный следящий, Зам. главного следящего и Разработчик.</p>`}</div>
-  <div class="card"><div class="row" style="justify-content:flex-start;margin-bottom:10px">${tb("act","Действующие")}${tb("arc","Архив")}</div><div class="tw"><table><thead><tr><th>Ник</th><th>Причина</th><th>Выдал</th><th>${wsub==="arc"?"Снял":""}</th></tr></thead><tbody>${L.length?L.map(v=>`<tr><td>${nm(v,"nick","uid")}</td><td>${esc(v.reason)}</td><td>${sm(v.byn||U(v.by)?.nick,v.date)}</td><td>${wsub==="arc"?sm(v.rbyn,v.rdate):(m?`<button class="btn s" onclick="removeWarn('${v.id}')">Снять</button>`:"")}</td></tr>`).join(""):`<tr><td colspan="4" class="mu">${wsub==="act"?"Действующих выговоров нет":"Архив пуст"}</td></tr>`}</tbody></table></div></div>`;
-}
-function addWarn(){
-  const r=$("#w_r").value.trim();if(!r)return toast("Укажите причину");
-  const u=U($("#w_u").value);
-  db.warn.push({id:uid(),uid:u.id,nick:u.nick,reason:r,date:Date.now(),by:me,byn:cur().nick});save();render();toast("Выговор выдан");
-}
-function removeWarn(id){confirmBox("Снять выговор? Он попадёт в архив.",()=>{Object.assign(db.warn.find(v=>v.id===id),{removed:true,rby:me,rbyn:cur().nick,rdate:Date.now()});save();render()})}
+      // Получаем данные пользователя
+      const userRes = await fetch("https://discord.com/api/users/@me", {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      });
+      const user = await userRes.json();
 
-function delItem(k,id){db[k]=db[k].filter(x=>x.id!==id);save();render()}
-let pid=null;
-function openProf(id){pid=id;tab="prof";render()}
-function vProf(){
-  const u=U(pid);if(!u){tab="list";return vList()}
-  const e=canEdit(u),now=Date.now(),v=onVac(u);
-  const W=db.warn.filter(x=>x.uid===u.id).slice().reverse(),V=db.vac.filter(x=>x.uid===u.id).slice().reverse();
-  const st=x=>x.cancel?"Отозван":now>new Date(x.to).getTime()+864e5?"Завершён":now<new Date(x.from).getTime()?"Запланирован":"Активен";
-  const row=(l,t)=>`<p style="margin:6px 0"><span class="mu">${l}:</span> ${esc(t||"—")}</p>`;
-  return`<div class="card"><button class="btn s" onclick="tab='list';render()">← К списку</button>
-  <h2 style="margin-top:14px">${esc(u.nick)}</h2>
-  <p>${v?`<span class="tag wa">В отпуске до ${fd(v.to)}</span> `:""}<span class="tag">Действующих выговоров: ${W.filter(x=>!x.removed).length}/3</span></p>
-  ${row("Префикс",u.prefix)}${row("Должности",u.pos.join(", "))}${row("Закреплённая должность",u.fixed)}${e?row("Пароль",u.pwc?"задан пользователем или руководством":"стандартный (равен нику)"):""}${row("Дата постановления",u.date?fd(u.date):"")}${row("Discord",u.discord)}${canManage()?row("Заметки",u.note):""}
-  ${e?`<div class="row" style="justify-content:flex-start;margin-top:16px"><button class="btn p" onclick="userForm('${u.id}')">Редактировать ✎</button><button class="btn" onclick="resetPw('${u.id}')">Сбросить пароль</button><button class="btn no" onclick="warnModal('${u.id}')">Выдать выговор</button><button class="btn" onclick="vacModal('${u.id}')">Выдать отпуск</button><button class="btn no" onclick="delUser('${u.id}')">Снять</button></div>`:""}</div>
-  <div class="card"><h3>Выговоры</h3><div class="tw"><table><thead><tr><th>Причина</th><th>Статус</th><th>Выдал</th><th>Снял</th><th></th></tr></thead><tbody>${W.length?W.map(x=>`<tr><td>${esc(x.reason)}</td><td><span class="tag ${x.removed?"":"no"}">${x.removed?"Снят":"Действует"}</span></td><td>${sm(x.byn||U(x.by)?.nick,x.date)}</td><td>${x.removed?sm(x.rbyn,x.rdate):"—"}</td><td>${e&&!x.removed?`<button class="btn s" onclick="removeWarn('${x.id}')">Снять</button>`:""}</td></tr>`).join(""):`<tr><td colspan="5" class="mu">Выговоров не было</td></tr>`}</tbody></table></div></div>
-  <div class="card"><h3>Отпуска</h3><div class="tw"><table><thead><tr><th>С</th><th>По</th><th>Причина</th><th>Статус</th><th>Выдал</th><th></th></tr></thead><tbody>${V.length?V.map(x=>`<tr><td>${fd(x.from)}</td><td>${fd(x.to)}</td><td>${esc(x.reason)}</td><td><span class="tag ${st(x)==="Активен"?"wa":""}">${st(x)}</span></td><td>${sm(x.byn||U(x.by)?.nick,x.date)}</td><td>${e&&!x.cancel&&st(x)!=="Завершён"?`<button class="btn s no" onclick="cancelVac('${x.id}')">Отозвать</button>`:""}</td></tr>`).join(""):`<tr><td colspan="6" class="mu">Отпусков не было</td></tr>`}</tbody></table></div></div>`;
-}
-function warnModal(id){modal(`<h2>Выговор: ${esc(U(id).nick)}</h2><label>Причина</label><input id="m_r"><div class="err" id="er"></div><div class="row" style="margin-top:12px"><button class="btn" onclick="closeM()">ОТМЕНА</button><button class="btn no" onclick="saveWarn('${id}')">ВЫДАТЬ</button></div>`);setTimeout(()=>$("#m_r").focus())}
-function saveWarn(id){const r=$("#m_r").value.trim();if(!r)return $("#er").textContent="Укажите причину";const u=U(id);db.warn.push({id:uid(),uid:u.id,nick:u.nick,reason:r,date:Date.now(),by:me,byn:cur().nick});save();closeM();render();toast("Выговор выдан")}
-function vacModal(id){modal(`<h2>Отпуск: ${esc(U(id).nick)}</h2><div class="g"><div><label>С</label><input id="m_f" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div><label>По</label><input id="m_t" type="date"></div></div><label style="margin-top:12px">Причина</label><input id="m_r"><div class="err" id="er"></div><div class="row" style="margin-top:12px"><button class="btn" onclick="closeM()">ОТМЕНА</button><button class="btn p" onclick="saveVac('${id}')">ВЫДАТЬ</button></div>`)}
-function saveVac(id){const f=$("#m_f").value,t=$("#m_t").value;if(!f||!t||t<f)return $("#er").textContent="Проверьте даты";const u=U(id);db.vac.push({id:uid(),uid:u.id,nick:u.nick,from:f,to:t,reason:$("#m_r").value,by:me,byn:cur().nick,date:Date.now()});save();closeM();render();toast("Отпуск выдан")}
-const fdt=d=>d?new Date(d).toLocaleString("ru-RU",{dateStyle:"short",timeStyle:"short"}):"—";
-const dd=t=>(t.due||"").slice(0,10),fdd=d=>d?String(d).slice(0,10).split("-").reverse().join("."):"—";
-const tday=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
-const tst=t=>t.closed?["Закрыто",""]:dd(t)>tday()?["Ожидает даты",""]:dd(t)===tday()?["Сдача сегодня","ok"]:["Просрочено","no"];
-let tid=null;
-function openTask(id){tid=id;tab="task";render()}
-function vTasks(){
-  const m=canManage();
-  const L=db.tasks.filter(t=>m||t.to==="all"||t.to===me).slice().sort((a,b)=>dd(a).localeCompare(dd(b)));
-  return`<div class="card"><div class="row"><h2>Задания (${L.length})</h2>${m?`<button class="btn" onclick="taskForm()">СОЗДАТЬ ЗАДАНИЕ</button>`:""}</div>
-  ${L.length?L.map(t=>{const [n,c]=tst(t),done=t.subs.some(x=>x.uid===me);return`<div class="row" onclick="openTask('${t.id}')" style="border-top:1px solid var(--ln);padding:14px 0;cursor:pointer"><div><b style="color:var(--ac)">${esc(t.title)}</b><div class="mu" style="font-size:12px">Дата сдачи: ${fdd(t.due)}</div></div><div>${done?'<span class="tag ok">Сдано</span> ':""}<span class="tag ${c}">${n}</span></div></div>`}).join(""):`<p class="mu">Заданий пока нет.${m?" Создайте первое кнопкой выше.":""}</p>`}</div>`;
-}
-function vTask(){
-  const t=db.tasks.find(x=>x.id===tid);if(!t){tab="tasks";return vTasks()}
-  const m=canManage(),[n,c]=tst(t),mine=t.to==="all"||t.to===me,done=t.subs.some(x=>x.uid===me),can=dd(t)===tday()&&!t.closed,to=t.to==="all"?"Все":(U(t.to)?.nick||"—");
-  return`<div class="card"><button class="btn s" onclick="tab='tasks';render()">← К заданиям</button>
-  <div class="row" style="margin-top:14px"><h2 style="margin:0">${esc(t.title)}</h2><span class="tag ${c}">${n}</span></div>
-  <p class="mu">Дата сдачи: ${fdd(t.due)}. Кому: ${esc(to)}. Создал: ${esc(t.byn||"—")}</p>
-  <h3>Описание</h3><div style="white-space:pre-wrap">${esc(t.desc)||"Описание не указано"}</div>
-  <div class="row" style="justify-content:flex-start;margin-top:18px">${mine?(done?'<span class="tag ok">Вы сдали</span>':`<button class="btn p" onclick="subTask('${t.id}')" ${can?"":"disabled"}>Сдать</button><span class="mu" style="font-size:13px">${can?"":t.closed?"Задание закрыто":"Сдать можно только "+fdd(t.due)}</span>`):""}
-  ${m?`<button class="btn s" onclick="taskForm('${t.id}')">Редактировать</button><button class="btn s" onclick="toggleTask('${t.id}')">${t.closed?"Открыть":"Закрыть"}</button><button class="btn s no" onclick="delTask('${t.id}')">Удалить</button>`:""}</div></div>
-  ${m?`<div class="card"><h3>Сдали (${t.subs.length})</h3>${t.subs.length?t.subs.map(x=>`<div style="border-top:1px solid var(--ln);padding:8px 0"><b>${esc(x.nick)}</b> <span class="mu" style="font-size:12px">${fdt(x.date)}</span><div>${esc(x.text)||"—"}</div></div>`).join(""):`<p class="mu">Пока никто не сдал.</p>`}</div>`:""}`;
-}
-function taskForm(id){
-  const t=id?db.tasks.find(x=>x.id===id):{title:"",desc:"",due:"",to:"all"};
-  modal(`<h2>${id?"Редактирование задания":"Новое задание"}</h2><div style="margin-bottom:12px"><label>Название</label><input id="t_n" value="${esc(t.title)}"></div><div style="margin-bottom:12px"><label>Описание</label><textarea id="t_d" rows="4">${esc(t.desc)}</textarea></div>
-  <div class="g"><div><label>Дата сдачи (сдать можно только в этот день)</label><input id="t_t" type="date" value="${esc((t.due||"").slice(0,10))}"></div><div><label>Кому</label><select id="t_u"><option value="all">Все</option>${db.users.map(u=>`<option value="${u.id}" ${t.to===u.id?"selected":""}>${esc(u.nick)}</option>`).join("")}</select></div></div>
-  <div class="err" id="er"></div><div class="row" style="margin-top:12px"><button class="btn" onclick="closeM()">ОТМЕНА</button><button class="btn p" onclick="saveTask('${id||""}')">СОХРАНИТЬ</button></div>`);
-}
-function saveTask(id){
-  const title=$("#t_n").value.trim(),due=$("#t_t").value;
-  if(!title)return $("#er").textContent="Укажите название";
-  if(!due)return $("#er").textContent="Укажите дату сдачи";
-  const t=id?db.tasks.find(x=>x.id===id):{id:uid(),subs:[],by:me,byn:cur().nick,created:Date.now()};
-  Object.assign(t,{title,desc:$("#t_d").value.trim(),due,to:$("#t_u").value});
-  if(!id)db.tasks.push(t);save();closeM();render();toast(id?"Задание изменено":"Задание создано");
-}
-function subTask(id){const t=db.tasks.find(x=>x.id===id);if(t.closed||dd(t)!==tday())return toast("Сдать можно только "+fdd(t.due));modal(`<h2>Сдать задание</h2><p class="mu">${esc(t.title)}</p><label>Комментарий или ссылка</label><textarea id="s_t" rows="3"></textarea><div class="row" style="margin-top:12px"><button class="btn" onclick="closeM()">ОТМЕНА</button><button class="btn p" onclick="doSub('${id}')">СДАТЬ</button></div>`)}
-function doSub(id){const t=db.tasks.find(x=>x.id===id);if(t.closed||dd(t)!==tday()){closeM();return toast("Сдать можно только "+fdd(t.due))}t.subs.push({uid:me,nick:cur().nick,text:$("#s_t").value.trim(),date:Date.now()});save();closeM();render();toast("Задание сдано")}
-function toggleTask(id){const t=db.tasks.find(x=>x.id===id);t.closed=!t.closed;save();render()}
-function delTask(id){confirmBox("Удалить задание?",()=>{db.tasks=db.tasks.filter(x=>x.id!==id);save();tab="tasks";render()})}
-function repAtt(){const a=$("#r_a").value==="Отсутствовал";$("#r_uw").style.display=a?"none":"";$("#r_cw").style.display=a?"":"none"}
-const VS={new:"На рассмотрении",ok:"Одобрен",no:"Отказан"},vcls=r=>r.st==="ok"?"ok":r.st==="no"?"no":"wa";
-const safeA=(l,t)=>`<a href="${/^https?:\/\//i.test(l)?esc(l):"#"}" target="_blank" rel="noopener" style="color:var(--ac);margin-right:12px">${t}</a>`;
-function vreqList(id){const L=db.vreq.filter(r=>r.uid===id).slice().reverse();return L.length?`<div class="card"><h3>Мои запросы отпуска</h3>${L.map(r=>`<div style="border-top:1px solid var(--ln);padding:8px 0">${fdd(r.from)} — ${fdd(r.to)} <span class="tag ${vcls(r)}">${VS[r.st]}</span>${r.dreason?`<div class="mu" style="font-size:12px">${esc(r.dreason)}</div>`:""}</div>`).join("")}</div>`:""}
-function vreqModal(){
-  modal(`<div class="row"><h2>Запрос отпуска</h2><button class="btn s" onclick="closeM()">✕</button></div>
-  <div class="g"><div><label>С</label><input id="q_f" type="date" value="${tday()}"></div><div><label>По</label><input id="q_t" type="date"></div></div>
-  <label style="margin-top:12px">Причина</label><input id="q_r">
-  <label style="margin-top:12px">Доказательства одобрения (ссылки)</label><div id="q_l"><input class="ql" placeholder="https://..." style="margin-bottom:6px"></div><button class="btn s" onclick="const i=document.createElement('input');i.className='ql';i.placeholder='https://...';i.style.marginBottom='6px';$('#q_l').appendChild(i)">+ Добавить ссылку</button>
-  <div class="err" id="er"></div><div class="row" style="margin-top:12px"><button class="btn" onclick="closeM()">Отмена</button><button class="btn p" onclick="saveVreq()">Отправить запрос</button></div>`);
-}
-function saveVreq(){
-  const f=$("#q_f").value,t=$("#q_t").value,proof=[...document.querySelectorAll(".ql")].map(i=>i.value.trim()).filter(Boolean);
-  if(!f||!t||t<f)return $("#er").textContent="Проверьте даты";
-  if(!proof.length)return $("#er").textContent="Добавьте доказательство одобрения";
-  db.vreq.push({id:uid(),uid:me,nick:cur().nick,from:f,to:t,reason:$("#q_r").value.trim(),proof,st:"new",date:Date.now()});
-  save();closeM();render();toast("Запрос на отпуск отправлен");
-}
-let osub="new",omode="req";
-function vOtp(){
-  if(!canManage())return`<div class="card"><p class="mu">Раздел доступен Заму и выше.</p></div>`;
-  const n=db.vreq.filter(r=>r.st==="new").length,L=db.vreq.filter(r=>r.st===osub).slice().reverse();
-  const top=`<div class="card"><div class="row" style="justify-content:flex-start"><button class="btn s ${omode==="req"?"p":""}" onclick="omode='req';render()">Запросы (${n})</button><button class="btn s ${omode==="vac"?"p":""}" onclick="omode='vac';render()">Отпуска</button></div></div>`;
-  if(omode==="vac")return top+vVac();
-  const tb=["new","ok","no"].map(k=>`<button class="btn s ${osub===k?"p":""}" onclick="osub='${k}';render()">${VS[k]} (${db.vreq.filter(r=>r.st===k).length})</button>`).join(" ");
-  return top+`<div class="card"><h2>Запросы на отпуск</h2><div class="row" style="justify-content:flex-start;margin-bottom:10px">${tb}</div>${L.length?L.map(r=>`<div style="border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:10px"><div class="row" style="justify-content:flex-start"><b>${esc(r.nick)}</b><span class="tag ${vcls(r)}">${VS[r.st]}</span></div>
-  <div class="mu" style="font-size:12px;margin-top:4px">Период ${fdd(r.from)} — ${fdd(r.to)} · Подан: ${fdt(r.date)}</div>
-  ${r.reason?`<div style="margin:8px 0">Причина: ${esc(r.reason)}</div>`:""}<div>${(r.proof||[]).map((l,i)=>safeA(l,"Доказательство "+(i+1))).join("")}</div>
-  ${r.by?`<div class="mu" style="font-size:12px;margin-top:6px">Решение: ${esc(r.byn||"—")}, ${fd(r.ddate)}${r.dreason?` — ${esc(r.dreason)}`:""}</div>`:""}
-  ${r.st==="new"?`<div class="row" style="justify-content:flex-start;margin-top:10px"><button class="btn s ok" onclick="decVreq('${r.id}','ok')">Одобрить</button><button class="btn s no" onclick="decVreq('${r.id}','no')">Отказать</button></div>`:""}</div>`).join(""):`<p class="mu">Здесь пока пусто.</p>`}</div>`;
-}
-function decVreq(id,st){
-  const r=db.vreq.find(x=>x.id===id),t=U(r.uid);
-  if(t&&!canEdit(t))return toast("Недостаточно прав");
-  const fin=dr=>{Object.assign(r,{st,by:me,byn:cur().nick,ddate:Date.now(),dreason:dr||""});
-    if(st==="ok")db.vac.push({id:uid(),uid:r.uid,nick:r.nick,from:r.from,to:r.to,reason:r.reason,by:me,byn:cur().nick,date:Date.now(),req:r.id});
-    save();render();toast(st==="ok"?"Отпуск одобрен и выдан":"Запрос отклонён")};
-  if(st==="no")promptBox("Отказать в отпуске","Причина отказа (необязательно)",v=>{fin(v)});else fin("");
-}
-function resetPw(id){
-  const t=U(id);if(!t||!canEdit(t))return toast("Недостаточно прав");
-  promptBox("Сброс пароля: "+esc(t.nick),"Новый пароль (пусто: пароль станет равен нику)",v=>{if(v&&v.length<4){$("#er").textContent="Пароль от 4 символов";return false}sha(v||t.nick).then(h=>{t.hash=h;t.pwc=!!v;save();render();toast(v?"Пароль изменён":"Пароль сброшен: теперь он равен нику")})});
-}
-function exportDb(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"}));a.download="panel-backup-"+tday()+".json";a.click()}
-function importDb(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.users))throw 0;confirmBox("Заменить все текущие данные данными из копии?",()=>{db=Object.assign({users:[],vac:[],warn:[],reports:[],arch:[],tasks:[],vreq:[]},d);save();me=null;try{sessionStorage.removeItem("adm_me_v2")}catch(e){}render();toast("Копия загружена")})}catch(e){toast("Файл не подходит")}};r.readAsText(f)}
-render();
-</script>
-</body>
-</html>
+      // Возвращаем на сайт с данными
+      const redirect = new URL(FRONTEND_URL);
+      redirect.searchParams.set("discord_id", user.id);
+      redirect.searchParams.set("discord_nick", user.username);
+      redirect.searchParams.set("discord_avatar", user.avatar || "");
+
+      return Response.redirect(redirect.toString(), 302);
+    }
+
+    return new Response("Discord Auth Worker работает", { status: 200 });
+  },
+};
