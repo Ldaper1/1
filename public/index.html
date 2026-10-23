@@ -127,7 +127,7 @@ function vList(){
   const m=canManage();
   return`<div class="card"><div class="row"><h2>Список администрации (Всего: ${db.users.length})</h2></div>
   <input placeholder="Поиск по нику..." oninput="q=this.value;fill()" style="margin-bottom:10px" id="srch">
-  <div class="tw"><table><thead><tr><th>Ник</th><th>Префикс</th><th>Должности</th><th>Дата постановления</th><th>Статус</th><th>Действия</th></tr></thead><tbody id="tb"></tbody></table></div></div>`+(m?`<button class="fab" onclick="userForm()">＋ Новый Пользователь</button>`:"")+(setTimeout(fill),"");
+  <div class="tw"><table><thead><tr><th>Ник</th><th>Префикс</th><th>Должности</th><th>Дата постановления</th><th>Статус</th><th>Действия</th></tr></thead><tbody id="tb"></tbody></table></div></div>`+(m?`<button class="fab" onclick="userForm()">＋ Новый сотрудник</button>`:"")+(setTimeout(fill),"");
 }
 let q="";
 function fill(){
